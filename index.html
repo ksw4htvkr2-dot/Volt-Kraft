@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f0f13">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Volt &amp; Kraft">
+<title>Volt &amp; Kraft</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ══════════════════════════════════════════
+   TOKENS
+══════════════════════════════════════════ */
+:root {
+  --bg:        #0f0f13;
+  --bg2:       #16161d;
+  --bg3:       #1e1e28;
+  --border:    #2a2a38;
+  --border2:   #363648;
+  --text:      #e8e6f0;
+  --muted:     #7a7890;
+  --subtle:    #3a3850;
+
+  /* ET1 — warmes Bernstein/Gold */
+  --et:        #e8c547;
+  --et-dim:    #c8a730;
+  --et-bg:     rgba(232,197,71,0.08);
+  --et-border: rgba(232,197,71,0.25);
+
+  /* Mechanik — kühles Türkis */
+  --mech:      #4ecdc4;
+  --mech-dim:  #35b5ac;
+  --mech-bg:   rgba(78,205,196,0.08);
+  --mech-border: rgba(78,205,196,0.25);
+
+  --good:   #4ade80;
+  --hard:   #fbbf24;
+  --again:  #f87171;
+
+  --r:  12px;
+  --r2: 18px;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+}
+
+/* ══════════════════════════════════════════
+   RESET & BASE
+══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html { height: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  height: 100%;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font-family: inherit; cursor: pointer; }
+
+::-webkit-scrollbar { width: 3px; height: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ══════════════════════════════════════════
+   LAYOUT SHELL
+══════════════════════════════════════════ */
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding-top: var(--safe-top);
+}
+
+/* ══════════════════════════════════════════
+   HEADER
+══════════════════════════════════════════ */
+.header {
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  gap: 10px;
+}
+
+.logo {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.25rem;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  margin-right: auto;
+}
+.logo em { color: var(--et); font-style: normal; }
+
+/* Subject Switch — prominent pill switcher */
+.subject-switcher {
+  display: flex;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 3px;
+  gap: 2px;
+}
+.subj-pill {
+  padding: 5px 16px;
+  border-radius: 20px;
+  border: none;
+  background: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: all 0.2s;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.subj-pill.et.active  { background: var(--et);   color: #0f0f13; }
+.subj-pill.mech.active{ background: var(--mech);  color: #0f0f13; }
+.subj-pill.both.active{ background: var(--border2); color: var(--text); }
+.subj-pill:not(.active):hover { color: var(--text); }
+
+/* Nav tabs row */
+.nav-tabs {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  gap: 0;
+  margin: 0 -16px;
+  padding: 0 8px;
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+
+.nav-tab {
+  flex-shrink: 0;
+  padding: 0 14px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-bottom: 2px solid transparent;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+.nav-tab .t-icon { font-size: 0.95rem; }
+.nav-tab.active   { color: var(--text); }
+.nav-tab.active.et-tab   { border-bottom-color: var(--et); color: var(--et); }
+.nav-tab.active.mech-tab { border-bottom-color: var(--mech); color: var(--mech); }
+.nav-tab.active.both-tab { border-bottom-color: var(--text); }
+.nav-tab:hover:not(.active) { color: var(--text); }
+
+/* ══════════════════════════════════════════
+   CONTENT AREA
+══════════════════════════════════════════ */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  padding-bottom: calc(16px + var(--safe-bot));
+}
+
+.page { display: none; padding: 16px; }
+.page.active { display: block; animation: fadeUp 0.22s ease; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+/* ══════════════════════════════════════════
+   SHARED COMPONENTS
+══════════════════════════════════════════ */
+.section-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.4rem;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.section-hint { font-size: 0.78rem; color: var(--muted); margin-bottom: 16px; }
+
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 16px;
+  margin-bottom: 10px;
+}
+.card.et-card   { border-color: var(--et-border);   background: linear-gradient(135deg, var(--bg2), rgba(232,197,71,0.04)); }
+.card.mech-card { border-color: var(--mech-border); background: linear-gradient(135deg, var(--bg2), rgba(78,205,196,0.04)); }
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.tag.et   { background: var(--et-bg);   color: var(--et);   border: 1px solid var(--et-border); }
+.tag.mech { background: var(--mech-bg); color: var(--mech); border: 1px solid var(--mech-border); }
+.tag.both { background: var(--bg3);     color: var(--muted); border: 1px solid var(--border); }
+
+.chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.chip {
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.chip:hover { border-color: var(--border2); color: var(--text); }
+.chip.active-et   { background: var(--et-bg);   color: var(--et);   border-color: var(--et-border); }
+.chip.active-mech { background: var(--mech-bg); color: var(--mech); border-color: var(--mech-border); }
+.chip.active-all  { background: var(--bg3);     color: var(--text); border-color: var(--border2); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 10px;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: all 0.18s;
+  cursor: pointer;
+}
+.btn:active { transform: scale(0.96); }
+.btn.et   { background: var(--et);   color: #0f0f13; }
+.btn.mech { background: var(--mech); color: #0f0f13; }
+.btn.ghost { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+.btn.ghost:hover { color: var(--text); border-color: var(--border2); }
+.btn:hover { opacity: 0.88; }
+
+/* ══════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════ */
+.dash-hero {
+  border-radius: var(--r2);
+  padding: 22px 20px;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.dash-hero.et-hero   { background: linear-gradient(135deg, #1a1608 0%, #1e1a05 100%); border: 1px solid var(--et-border); }
+.dash-hero.mech-hero { background: linear-gradient(135deg, #051a1a 0%, #051e1d 100%); border: 1px solid var(--mech-border); }
+.dash-hero.both-hero { background: linear-gradient(135deg, #0e0e18 0%, #141420 100%); border: 1px solid var(--border); }
+.dash-hero::after {
+  content: attr(data-emoji);
+  position: absolute;
+  right: 16px; top: 50%; transform: translateY(-50%);
+  font-size: 3.5rem;
+  opacity: 0.12;
+}
+.hero-sub  { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; margin-bottom: 4px; }
+.hero-sub.et   { color: var(--et-dim); }
+.hero-sub.mech { color: var(--mech-dim); }
+.hero-sub.both { color: var(--muted); }
+.hero-title { font-family: 'Instrument Serif', serif; font-size: 1.5rem; line-height: 1.3; }
+
+.stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 14px; }
+.stat-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px 10px;
+  text-align: center;
+}
+.stat-val { font-family: 'Instrument Serif', serif; font-size: 1.6rem; line-height: 1; }
+.stat-val.et   { color: var(--et); }
+.stat-val.mech { color: var(--mech); }
+.stat-val.good { color: var(--good); }
+.stat-lbl { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 2px; }
+
+.today-list { display: flex; flex-direction: column; gap: 8px; }
+.today-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: border-color 0.15s;
+  -webkit-user-select: none;
+}
+.today-item:active { background: var(--bg3); }
+.today-item:hover  { border-color: var(--border2); }
+.ti-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.ti-dot.et   { background: var(--et); box-shadow: 0 0 8px var(--et); }
+.ti-dot.mech { background: var(--mech); box-shadow: 0 0 8px var(--mech); }
+.ti-info { flex: 1; min-width: 0; }
+.ti-name { font-size: 0.85rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ti-meta { font-size: 0.72rem; color: var(--muted); }
+.ti-arrow { color: var(--muted); font-size: 0.9rem; }
+
+.prog-section { margin-top: 14px; }
+.prog-label-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 5px; }
+.prog-label-row span { color: var(--muted); }
+.prog-label-row strong { font-family: 'DM Mono', monospace; font-size: 0.7rem; }
+.prog-track { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
+.prog-fill  { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+.prog-fill.et   { background: linear-gradient(90deg, var(--et-dim), var(--et)); }
+.prog-fill.mech { background: linear-gradient(90deg, var(--mech-dim), var(--mech)); }
+
+/* ══════════════════════════════════════════
+   THEMEN
+══════════════════════════════════════════ */
+/* Big subject banner at top of topics page */
+.subject-banner {
+  border-radius: var(--r2);
+  padding: 18px 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.sb-et   { background: linear-gradient(135deg, #1f1900, #221c00); border: 1px solid var(--et-border); }
+.sb-mech { background: linear-gradient(135deg, #001f1e, #00201f); border: 1px solid var(--mech-border); }
+.sb-both { background: var(--bg2); border: 1px solid var(--border); }
+.sb-icon { font-size: 2rem; }
+.sb-text h2 { font-family: 'Instrument Serif', serif; font-size: 1.2rem; }
+.sb-text p  { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+.sb-count { margin-left: auto; text-align: right; }
+.sb-count strong { font-family: 'Instrument Serif', serif; font-size: 1.6rem; display: block; line-height: 1; }
+.sb-count.et   strong { color: var(--et); }
+.sb-count.mech strong { color: var(--mech); }
+.sb-count span { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+
+.topic-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 8px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.topic-item.et-item:has(.topic-body.open)   { border-color: var(--et-border); }
+.topic-item.mech-item:has(.topic-body.open) { border-color: var(--mech-border); }
+
+.topic-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 14px;
+  cursor: pointer;
+  -webkit-user-select: none;
+}
+.topic-header:active { background: var(--bg3); }
+.t-num { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); min-width: 32px; }
+.t-title { flex: 1; font-size: 0.88rem; font-weight: 600; }
+.t-ring-wrap { flex-shrink: 0; position: relative; width: 34px; height: 34px; }
+.t-ring-wrap svg { transform: rotate(-90deg); }
+.t-ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 0.52rem; font-family: 'DM Mono', monospace; color: var(--muted); }
+.t-chevron { color: var(--muted); font-size: 0.8rem; transition: transform 0.2s; }
+.topic-header.open .t-chevron { transform: rotate(90deg); }
+
+.topic-body { display: none; padding: 0 14px 14px; border-top: 1px solid var(--border); }
+.topic-body.open { display: block; animation: slideDown 0.2s ease; }
+@keyframes slideDown { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+.topic-desc { font-size: 0.78rem; color: var(--muted); padding: 10px 0 12px; line-height: 1.5; }
+
+.subtopic-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  -webkit-user-select: none;
+}
+.subtopic-row:last-of-type { border-bottom: none; }
+.subtopic-row:active { opacity: 0.7; }
+.st-check {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid var(--border2);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem;
+  transition: all 0.2s;
+}
+.subtopic-row.done .st-check { background: var(--good); border-color: var(--good); color: #0f0f13; }
+.st-text { flex: 1; font-size: 0.82rem; }
+.subtopic-row.done .st-text { color: var(--muted); text-decoration: line-through; }
+
+.topic-btns { display: flex; gap: 8px; margin-top: 12px; }
+
+/* ══════════════════════════════════════════
+   FORMELN
+══════════════════════════════════════════ */
+.search-wrap { position: relative; margin-bottom: 12px; }
+.search-input {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.88rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--border2); }
+.search-input::placeholder { color: var(--muted); }
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 1rem; pointer-events: none; }
+
+.formula-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px;
+  margin-bottom: 8px;
+  transition: border-color 0.15s;
+}
+.formula-card.et-f:hover   { border-color: var(--et-border); }
+.formula-card.mech-f:hover { border-color: var(--mech-border); }
+.formula-card.hidden { display: none; }
+
+.fc-name   { font-size: 0.88rem; font-weight: 600; margin: 6px 0 10px; }
+.fc-box {
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.83rem;
+  color: #c8d8f8;
+  line-height: 1.6;
+  border-left: 2px solid var(--et);
+  margin-bottom: 8px;
+  white-space: pre-wrap;
+}
+.fc-box.mech-box { border-left-color: var(--mech); color: #b8e8e4; }
+.fc-vars { font-size: 0.75rem; color: var(--muted); line-height: 1.6; }
+.fc-vars code { font-family: 'DM Mono', monospace; color: var(--text); font-size: 0.72rem; }
+.fc-tip {
+  margin-top: 8px;
+  padding: 7px 10px;
+  background: rgba(232,197,71,0.06);
+  border-radius: 6px;
+  font-size: 0.74rem;
+  color: #c8a830;
+  border-left: 2px solid rgba(232,197,71,0.3);
+  line-height: 1.5;
+}
+.fc-tip.mech-tip { background: rgba(78,205,196,0.06); color: #35a09a; border-left-color: rgba(78,205,196,0.3); }
+
+/* ══════════════════════════════════════════
+   KARTEIKARTEN
+══════════════════════════════════════════ */
+.deck-select-wrap { display: flex; gap: 8px; margin-bottom: 14px; align-items: center; flex-wrap: wrap; }
+.deck-select {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.card-stats { display: flex; gap: 14px; margin-bottom: 14px; }
+.cstat { text-align: center; flex: 1; }
+.cstat-val { font-family: 'Instrument Serif', serif; font-size: 1.4rem; font-weight: 400; line-height: 1; }
+.cstat-val.g { color: var(--good); }
+.cstat-val.h { color: var(--hard); }
+.cstat-val.a { color: var(--again); }
+.cstat-lbl { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-top: 2px; }
+
+/* Card flip */
+.flip-scene { width: 100%; perspective: 900px; margin-bottom: 16px; }
+
+.flip-card {
+  width: 100%;
+  min-height: 240px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.4, 0.2, 0.2, 1);
+  cursor: pointer;
+}
+.flip-card.flipped { transform: rotateY(180deg); }
+
+.flip-face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  background: var(--bg2);
+  border-radius: var(--r2);
+  padding: 22px 20px 18px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+}
+.flip-back { transform: rotateY(180deg); }
+
+.flip-face.et-face   { border-color: var(--et-border); }
+.flip-face.mech-face { border-color: var(--mech-border); }
+
+.card-stripe { height: 3px; border-radius: 2px; margin-bottom: 14px; }
+.card-stripe.et   { background: var(--et); }
+.card-stripe.mech { background: var(--mech); }
+
+.card-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.09em; margin-bottom: 14px; display: flex; justify-content: space-between; }
+.card-q {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.15rem;
+  line-height: 1.6;
+}
+.card-tap-hint { text-align: center; font-size: 0.7rem; color: var(--muted); margin-top: 14px; }
+
+.card-ans-main {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.88rem;
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 12px 14px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+  color: #c8d8f8;
+  text-align: center;
+}
+.card-ans-explain { font-size: 0.78rem; color: var(--muted); text-align: center; line-height: 1.6; }
+
+.rating-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }
+.rate-btn {
+  padding: 10px 4px;
+  border-radius: 8px;
+  border: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+  -webkit-user-select: none;
+}
+.rate-btn:active { transform: scale(0.93); }
+.rate-btn.again { background: rgba(248,113,113,0.15); color: var(--again); border: 1px solid rgba(248,113,113,0.3); }
+.rate-btn.hard  { background: rgba(251,191,36,0.12); color: var(--hard);  border: 1px solid rgba(251,191,36,0.3); }
+.rate-btn.good  { background: rgba(74,222,128,0.12); color: var(--good);  border: 1px solid rgba(74,222,128,0.3); }
+.rate-btn.easy  { background: rgba(96,165,250,0.12); color: #60a5fa;      border: 1px solid rgba(96,165,250,0.3); }
+
+.card-nav-row { display: flex; align-items: center; gap: 10px; }
+.cnav-btn {
+  padding: 8px 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.cnav-btn:hover:not(:disabled) { color: var(--text); border-color: var(--border2); }
+.cnav-btn:disabled { opacity: 0.3; cursor: default; }
+.cnav-counter { flex: 1; text-align: center; font-family: 'DM Mono', monospace; font-size: 0.75rem; color: var(--muted); }
+
+.done-screen { text-align: center; padding: 40px 20px; }
+.done-emoji { font-size: 3rem; margin-bottom: 14px; }
+.done-title { font-family: 'Instrument Serif', serif; font-size: 1.4rem; margin-bottom: 8px; }
+.done-sub   { font-size: 0.82rem; color: var(--muted); margin-bottom: 20px; }
+.done-stats { display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; }
+.done-stat  { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 10px 18px; text-align: center; }
+.done-stat strong { display: block; font-family: 'Instrument Serif', serif; font-size: 1.5rem; }
+
+/* ══════════════════════════════════════════
+   AUFGABEN
+══════════════════════════════════════════ */
+.aufg-item {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.aufg-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  -webkit-user-select: none;
+}
+.aufg-head:active { background: var(--bg3); }
+.aufg-code { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--muted); min-width: 32px; }
+.aufg-name { flex: 1; font-size: 0.85rem; font-weight: 600; }
+.diff-badge {
+  font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 20px;
+  letter-spacing: 0.04em;
+}
+.diff-badge.easy   { background: rgba(74,222,128,0.12); color: var(--good); }
+.diff-badge.medium { background: rgba(251,191,36,0.12); color: var(--hard); }
+.diff-badge.hard   { background: rgba(248,113,113,0.12); color: var(--again); }
+
+.aufg-body { display: none; border-top: 1px solid var(--border); padding: 12px 14px; }
+.aufg-body.open { display: block; }
+
+.aufg-problem-box {
+  background: var(--bg3);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  margin-bottom: 10px;
+  color: var(--text);
+}
+
+.given-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.given-pill {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 9px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--text);
+}
+
+.sol-toggle {
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: 1px dashed var(--border2);
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+.sol-toggle:hover { border-color: var(--et); color: var(--et); }
+
+.sol-box {
+  display: none;
+  margin-top: 10px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(232,197,71,0.04), transparent);
+  border-radius: 8px;
+  border-left: 2px solid rgba(232,197,71,0.4);
+}
+.sol-box.open { display: block; animation: fadeUp 0.2s ease; }
+.sol-step {
+  font-size: 0.8rem;
+  line-height: 1.7;
+  padding: 3px 0 3px 16px;
+  position: relative;
+  color: var(--text);
+}
+.sol-step::before { content: '→'; position: absolute; left: 0; color: rgba(232,197,71,0.6); }
+.sol-result {
+  margin-top: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--good);
+  background: rgba(74,222,128,0.08);
+  padding: 7px 10px;
+  border-radius: 6px;
+}
+
+/* ══════════════════════════════════════════
+   ZUSAMMENHÄNGE
+══════════════════════════════════════════ */
+.conn-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 16px;
+  margin-bottom: 10px;
+}
+.conn-title { font-family: 'Instrument Serif', serif; font-size: 1.05rem; margin-bottom: 2px; }
+.conn-sub   { font-size: 0.72rem; color: var(--muted); margin-bottom: 14px; }
+
+.analogy {
+  display: grid;
+  grid-template-columns: 1fr 24px 1fr;
+  gap: 0;
+  margin-bottom: 10px;
+}
+.analogy-col { background: var(--bg3); border-radius: 8px; padding: 10px; }
+.analogy-col h4 { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+.analogy-col.et-col   h4 { color: var(--et); }
+.analogy-col.mech-col h4 { color: var(--mech); }
+.analogy-divider { display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 0.9rem; }
+.analogy-row { display: flex; justify-content: space-between; align-items: baseline; gap: 4px; padding: 3px 0; border-bottom: 1px solid var(--border); font-size: 0.75rem; }
+.analogy-row:last-child { border-bottom: none; }
+.analogy-row .ar-key { color: var(--muted); flex-shrink: 0; }
+.analogy-row .ar-val { font-family: 'DM Mono', monospace; font-size: 0.68rem; color: var(--text); text-align: right; }
+
+.conn-note {
+  padding: 8px 10px;
+  background: rgba(232,197,71,0.05);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #a89030;
+  border-left: 2px solid rgba(232,197,71,0.25);
+  line-height: 1.5;
+}
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: calc(20px + var(--safe-bot));
+  left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  pointer-events: none;
+  transition: transform 0.3s ease;
+  z-index: 9999;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ─── HEADER ─── -->
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">Volt <em>&</em> Kraft</div>
+      <div class="subject-switcher">
+        <button class="subj-pill et active" onclick="setSubject('et')">ET1</button>
+        <button class="subj-pill mech"      onclick="setSubject('mech')">Mechanik</button>
+        <button class="subj-pill both"      onclick="setSubject('both')">Beide</button>
+      </div>
+    </div>
+    <div class="nav-tabs" id="nav-tabs">
+      <button class="nav-tab both-tab active" onclick="showPage('dash')"         id="tab-dash">   <span class="t-icon">⌂</span> Start</button>
+      <button class="nav-tab both-tab"        onclick="showPage('topics')"       id="tab-topics"> <span class="t-icon">📚</span> Themen</button>
+      <button class="nav-tab both-tab"        onclick="showPage('formeln')"      id="tab-formeln"><span class="t-icon">∑</span> Formeln</button>
+      <button class="nav-tab both-tab"        onclick="showPage('karten')"       id="tab-karten"> <span class="t-icon">🃏</span> Karten</button>
+      <button class="nav-tab both-tab"        onclick="showPage('aufgaben')"     id="tab-aufgaben"><span class="t-icon">✏</span> Aufgaben</button>
+      <button class="nav-tab both-tab"        onclick="showPage('connections')"  id="tab-connections"><span class="t-icon">⟷</span> Analogien</button>
+    </div>
+  </div>
+
+  <!-- ─── CONTENT ─── -->
+  <div class="content">
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="page active" id="page-dash">
+      <div class="dash-hero both-hero" id="dash-hero" data-emoji="⚡"></div>
+
+      <div class="stat-row" id="stat-row"></div>
+
+      <div class="section-title" style="margin-bottom:10px">Heute lernen</div>
+      <div class="today-list" id="today-list"></div>
+
+      <div class="prog-section">
+        <div class="section-title" style="margin:14px 0 10px">Fortschritt</div>
+        <div id="progress-bars"></div>
+      </div>
+    </div>
+
+    <!-- ══ THEMEN ══ -->
+    <div class="page" id="page-topics">
+      <div id="topics-banner"></div>
+      <div class="chip-row" id="topics-filter"></div>
+      <div id="topics-list"></div>
+    </div>
+
+    <!-- ══ FORMELN ══ -->
+    <div class="page" id="page-formeln">
+      <div class="section-title">Formelsammlung</div>
+      <div class="section-hint" id="formula-hint">ET1 &amp; Mechanik — alle wichtigen Formeln</div>
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input class="search-input" type="search" placeholder="Suchen…" id="formula-search" oninput="searchFormulas(this.value)">
+      </div>
+      <div class="chip-row" id="formula-cats"></div>
+      <div id="formula-list"></div>
+    </div>
+
+    <!-- ══ KARTEIKARTEN ══ -->
+    <div class="page" id="page-karten">
+      <div class="section-title">Karteikarten</div>
+      <div class="section-hint">Spaced Repetition — lerne was du noch nicht weißt</div>
+      <div class="deck-select-wrap">
+        <select class="deck-select" id="deck-select" onchange="loadDeck()">
+          <option value="all">Alle Karten</option>
+          <option value="due">Fällig heute</option>
+          <option value="et-netz">ET1 — Netzwerke</option>
+          <option value="et-quellen">ET1 — Quellen</option>
+          <option value="et-feld">ET1 — E-Feld & Kondensatoren</option>
+          <option value="mech-statik">Mechanik — Statik</option>
+          <option value="mech-kinetik">Mechanik — Kinematik</option>
+        </select>
+        <button class="btn ghost" onclick="shuffleDeck()">🔀</button>
+      </div>
+      <div class="card-stats">
+        <div class="cstat"><div class="cstat-val g" id="s-good">0</div><div class="cstat-lbl">Gut</div></div>
+        <div class="cstat"><div class="cstat-val h" id="s-hard">0</div><div class="cstat-lbl">Schwer</div></div>
+        <div class="cstat"><div class="cstat-val a" id="s-again">0</div><div class="cstat-lbl">Nochmal</div></div>
+      </div>
+      <div id="flashcard-area"></div>
+    </div>
+
+    <!-- ══ AUFGABEN ══ -->
+    <div class="page" id="page-aufgaben">
+      <div class="section-title">Aufgaben</div>
+      <div class="section-hint">Aus ET1-ÜB 1–4 mit vollständigem Lösungsweg</div>
+      <div class="chip-row" id="aufg-filter"></div>
+      <div id="aufg-list"></div>
+    </div>
+
+    <!-- ══ ANALOGIEN ══ -->
+    <div class="page" id="page-connections">
+      <div class="section-title">Analogien</div>
+      <div class="section-hint">Warum ET1 und Mechanik sich ähneln — und wie du das nutzt</div>
+      <div id="conn-list"></div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /shell -->
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     DATA & LOGIC
+════════════════════════════════════════════════════ -->
+<script>
+/* ──────────────────────────────────────────────
+   PERSISTENCE
+────────────────────────────────────────────── */
+const DB = {
+  get: (k, def) => { try { const v=localStorage.getItem('vk_'+k); return v!=null?JSON.parse(v):def; } catch{return def;} },
+  set: (k, v)   => { try { localStorage.setItem('vk_'+k, JSON.stringify(v)); } catch{} },
+};
+
+/* ──────────────────────────────────────────────
+   STATE
+────────────────────────────────────────────── */
+let subject = DB.get('subject', 'both');
+let currentDeck = [];
+let cardIdx = 0;
+let flipped = false;
+let sessionStats = {good:0, hard:0, again:0};
+let cardRatings = DB.get('cardRatings', {});   // {id:{due,interval,ef}}
+let topicProgress = DB.get('topicProgress', {}); // {topicId:{subtopicIdx:bool}}
+let overallProgress = DB.get('overallProgress', {
+  'ET1 — Netzwerke': 65,
+  'ET1 — Quellen': 40,
+  'ET1 — E-Feld': 20,
+  'Mechanik — Statik': 55,
+  'Mechanik — Kinetik': 15,
+});
+
+/* ──────────────────────────────────────────────
+   DATA
+────────────────────────────────────────────── */
+const TOPICS = [
+  {id:'et1', s:'et', num:'ÜB 1', title:'Grundlagen Gleichstromkreis',
+   desc:'Ohmsches Gesetz, Serien- & Parallelschaltung, Spannungs-/Stromteiler, Widerstandsdraht',
+   sub:['Parallelschaltung — Ströme & R_ges','Serienschaltung — Spannungen','Gemischte Netzwerke (1.3)','Netzwerkumformung (1.4, 1.5)','Widerstandsdraht & Leitfähigkeit (1.6–1.8)','Spannungsteiler (1.9) & Teilerregeln (1.10)']},
+  {id:'et2', s:'et', num:'ÜB 2', title:'Netzwerkanalyse & Quellen',
+   desc:'Superposition, Thévenin, Norton — Netzwerke mit mehreren Quellen analysieren',
+   sub:['Messwerk Spannung (2.1) & Strom (2.2)','Superposition — 3 Aufgaben (2.3–2.5)','Ersatzspannungsquelle Thévenin (2.6–2.8)','Ersatzstromquelle Norton (2.9–2.10)']},
+  {id:'et3', s:'et', num:'ÜB 3', title:'Quellen, Widerstand & Coulomb',
+   desc:'Innenwiderstand, Temperaturabhängigkeit, Stromdichte, Coulomb-Kraft',
+   sub:['Batterie — Ri, Ik, I-U Kennlinie (3.1–3.3)','Temperaturkoeffizient Elektromotor & Glühwendel (3.4–3.5)','Stromdichte in Zylindern (3.6–3.7)','Erder — Schrittspannung (3.8)','Coulomb-Kraft & E-Feld (3.9–3.10)']},
+  {id:'et4', s:'et', num:'ÜB 4', title:'Elektrisches Feld & Kondensatoren',
+   desc:'Elektrisches Feld (Kugel, Draht, Platte, Koax), Kondensatoren, Dielektrika, Energie',
+   sub:['Energie bewegter Ladungen (4.1)','Geladene Kugel — E-Feld (4.2)','Geladener Draht λ (4.3)','Plattenkondensator — E, U, C (4.4)','Koaxialkabel (4.5) & Doppelleitung (4.6)','Schicht- & Drehkondensator (4.7–4.8)','Geschichtetes Dielektrikum (4.9–4.10)']},
+  {id:'m1', s:'mech', num:'VO 1–2', title:'Vektoren & Kräfte',
+   desc:'Kraft als Vektor (Betrag, Richtung, Wirkungslinie), Moment, Kreuzprodukt, Kraftpaar',
+   sub:['Kraft — Betrag, Richtung, Wirkungslinie','Freier vs. gebundener Vektor','Vektoraddition & Resultierende','Moment — Hebelarm, Kreuzprodukt','Kraftpaar = freies Moment']},
+  {id:'m2', s:'mech', num:'VO 3–5', title:'Statik & Gleichgewicht',
+   desc:'Freikörperbild, Lagertypen, Gleichgewichtsbedingungen, statische Bestimmtheit',
+   sub:['Freikörperbild — die 3 Schritte','Lagertypen: Fest-, Loslager, Einspannung','Gleichgewicht: ΣF=0, ΣM=0','Auflagerreaktionen berechnen','Statisch bestimmt prüfen']},
+  {id:'m3', s:'mech', num:'VO 6', title:'Fachwerk',
+   desc:'Knotenpunktmethode, Ritter-Schnitt, Nullstäbe',
+   sub:['Nullstäbe erkennen','Knotenpunktmethode','Ritter-Schnitt (Schnittpunkt-Methode)']},
+  {id:'m4', s:'mech', num:'VO 7–8', title:'Schwerpunkt & Trägheitsmoment',
+   desc:'Flächenschwerpunkt, Steiner-Anteil, Flächenträgheitsmomente',
+   sub:['Flächenschwerpunkt — Integration','Schwerpunkt zusammengesetzter Flächen','Steiner-Anteil: I_A = I_S + A·d²','Trägheitsmomente (Rechteck, Kreis, Dreieck)']},
+  {id:'m5', s:'mech', num:'VO 9–10', title:'Kinematik & Kinetik',
+   desc:'Weg, Geschwindigkeit, Beschleunigung, Newton, Impuls, Energie',
+   sub:['Gleichmäßig beschleunigte Bewegung','Kreisbewegung ω, α','Newton: F=ma','Arbeit & Energiesatz']},
+  {id:'m6', s:'mech', num:'VO 11–12', title:'Schnittgrößen & Biegung',
+   desc:'Normalkraft, Querkraft, Biegemoment — Verläufe zeichnen und berechnen',
+   sub:['Schnittgrößen N, Q, M definieren','Schnittgrößenverläufe zeichnen','Zusammenhang Q=dM/dx','Balkensysteme und Rahmen']},
+];
+
+const FORMULAS = [
+  {s:'et', cat:'Grundlagen', name:'Ohmsches Gesetz',
+   formula:'U = R · I',
+   vars:'U = Spannung [V]  R = Widerstand [Ω]  I = Strom [A]',
+   tip:'Gilt für lineare Widerstände bei konstanter Temperatur.'},
+  {s:'et', cat:'Grundlagen', name:'Leistung',
+   formula:'P = U · I = I² · R = U² / R',
+   vars:'P = Leistung [W]',
+   tip:'Alle drei Varianten sind gleichwertig — nimm jene, bei der du 2 Größen kennst.'},
+  {s:'et', cat:'Grundlagen', name:'Serienschaltung',
+   formula:'R_ges = R₁ + R₂ + … + Rₙ\nI = const  U = U₁ + U₂ + …',
+   vars:'Spannungsteiler: U₁ = U · R₁ / R_ges',
+   tip:'Gleicher Strom überall — Spannungen teilen sich proportional zu R auf.'},
+  {s:'et', cat:'Grundlagen', name:'Parallelschaltung',
+   formula:'1/R_ges = 1/R₁ + 1/R₂ + …\nU = const  I = I₁ + I₂ + …',
+   vars:'Für 2 Widerstände: R_ges = R₁·R₂ / (R₁+R₂)\nStromteiler: I₁ = I · R₂/(R₁+R₂)',
+   tip:'Gleiche Spannung überall — Ströme teilen sich umgekehrt proportional zu R auf.'},
+  {s:'et', cat:'Grundlagen', name:'Spezifischer Widerstand',
+   formula:'R = l / (κ · A)     ρ = 1 / κ',
+   vars:'l = Länge [m]  A = Querschnitt [mm²]  κ = Leitfähigkeit [m/Ωmm²]',
+   tip:'Cu: κ=56  Al: κ=35  NiCr: κ≈0,91 m/Ωmm²'},
+  {s:'et', cat:'Grundlagen', name:'Temperaturabhängigkeit',
+   formula:'R(T) = R₂₀·[1 + α₂₀·(T−20) + β₂₀·(T−20)²]',
+   vars:'α₂₀ [K⁻¹] = Temp.-Koeff. 1. Ordnung\nβ₂₀ [K⁻²] = Temp.-Koeff. 2. Ordnung',
+   tip:'Metalle: Widerstand steigt mit T. Wolfram α=4,1·10⁻³ K⁻¹, β=1·10⁻⁶ K⁻²'},
+  {s:'et', cat:'Quellen', name:'Reale Spannungsquelle',
+   formula:'U_kl = U₀ − Ri · I\nIk = U₀ / Ri',
+   vars:'U₀ = Leerlaufspannung  Ri = Innenwiderstand\nIk = Kurzschlussstrom',
+   tip:'Je kleiner Ri, desto idealer. Im Leerlauf (I=0): U_kl = U₀.'},
+  {s:'et', cat:'Quellen', name:'Thévenin → Norton',
+   formula:'U₀_Th = I₀_No · Ri\nRi ist identisch bei beiden',
+   vars:'Th: U₀ in Serie mit Ri  No: I₀ parallel zu Ri',
+   tip:'U-Quelle + Ri in Serie ↔ I-Quelle + Ri parallel — gleiche Außenwirkung!'},
+  {s:'et', cat:'Netzwerke', name:'Kirchhoff 1 — Knotenregel',
+   formula:'Σ Iᵢ = 0   (am Knoten)',
+   vars:'Zufließend: +  Abfließend: −',
+   tip:'Ladungserhaltung. Was rein, muss raus.'},
+  {s:'et', cat:'Netzwerke', name:'Kirchhoff 2 — Maschenregel',
+   formula:'Σ Uᵢ = 0   (geschlossener Umlauf)',
+   vars:'Vorzeichen durch Umlaufrichtung',
+   tip:'Energieerhaltung. Spannung hoch an Quelle, runter am Widerstand.'},
+  {s:'et', cat:'Netzwerke', name:'Superposition',
+   formula:'I = I\' (nur Q₁) + I\'\' (nur Q₂) + …',
+   vars:'U-Quellen: kurzschließen  I-Quellen: öffnen',
+   tip:'Nur für lineare Netzwerke. Einzeln berechnen, am Ende addieren.'},
+  {s:'et', cat:'E-Feld', name:'Coulomb-Kraft',
+   formula:'F = Q₁·Q₂ / (4π·ε₀·r²)',
+   vars:'ε₀ = 8,854·10⁻¹² As/Vm  r = Abstand [m]',
+   tip:'F∝1/r² — verdoppelt man r, wird F viermal kleiner!'},
+  {s:'et', cat:'E-Feld', name:'Elektrisches Feld',
+   formula:'E = F/Q = Q/(4π·ε₀·r²)  [Punktladung]\nE = λ/(2π·ε₀·r)      [unendl. Draht]\nE = σ/ε₀             [Plattenfeld]',
+   vars:'λ = Linienladungsdichte [C/m]  σ = Flächenladungsdichte [C/m²]',
+   tip:'Kugel: außen wie Punktladung, innen E=0. Draht: E~1/r. Platte: E=const.'},
+  {s:'et', cat:'Kondensatoren', name:'Plattenkondensator',
+   formula:'E = Q/(ε₀·εᵣ·A)\nU = E · d\nC = ε₀·εᵣ·A / d',
+   vars:'A = Fläche [m²]  d = Abstand [m]  εᵣ = rel. Permittivität',
+   tip:'Dielektrikum einlegen: E wird εᵣ-mal kleiner, C wird εᵣ-mal größer!'},
+  {s:'et', cat:'Kondensatoren', name:'Koaxialkabel',
+   formula:'E(r) = Q / (2π·ε₀·εᵣ·l·r)\nC = 2π·ε₀·εᵣ·l / ln(r₁/r₀)',
+   vars:"r₀ = Innenradius  r₁ = Außenradius  l = Länge\nC' = C/l [Kapazitätsbelag]",
+   tip:'E fällt mit 1/r ab — maximales Feld am Innenleiter!'},
+  {s:'et', cat:'Kondensatoren', name:'Energie & geschichtetes Dielektrikum',
+   formula:'We = ½·C·U² = Q²/(2C)\nD = const (an Grenzfläche)\nE₁/E₂ = ε₂/ε₁',
+   vars:'D = elektrische Flussdichte [As/m²]\nε = ε₀·εᵣ',
+   tip:'D stetig, E springt! Größeres εᵣ → kleineres E → geringere Durchschlaggefahr.'},
+  // Mechanik
+  {s:'mech', cat:'Vektoren', name:'Betrag & Einheitsvektor',
+   formula:'|a⃗| = √(aₓ² + aᵧ² + a_z²)\ne⃗ = a⃗ / |a⃗|',
+   vars:'Einheitsvektor: Betrag = 1, zeigt nur Richtung',
+   tip:''},
+  {s:'mech', cat:'Vektoren', name:'Kreuzprodukt & Moment',
+   formula:'M⃗ = r⃗ × F⃗\n|M⃗| = |r⃗|·|F⃗|·sin(φ) = |F⃗|·d',
+   vars:'d = Hebelarm (Normalabstand WL zu Drehpunkt)\nφ = Winkel zwischen r⃗ und F⃗',
+   tip:'In der Ebene: M = rₓ·Fᵧ − rᵧ·Fₓ. Vorzeichen = Drehrichtung.'},
+  {s:'mech', cat:'Statik', name:'Gleichgewichtsbedingungen',
+   formula:'Σ F⃗ᵢ = 0⃗\nΣ M⃗ᵢ(A) = 0⃗',
+   vars:'In 2D: ΣFₓ=0, ΣFᵧ=0, ΣM_A=0',
+   tip:'Momentenpunkt A so wählen, dass möglichst viele Unbekannte herausfallen!'},
+  {s:'mech', cat:'Statik', name:'Lager & Unbekannte',
+   formula:'Festlager:    Fₓ, Fᵧ       → 2 Unbekannte\nLoslager:     Fₙ           → 1 Unbekannte\nEinspannung:  Fₓ, Fᵧ, M   → 3 Unbekannte',
+   vars:'Statisch bestimmt: 3 Unbekannte = 3 Gleichungen',
+   tip:'Immer zuerst zählen: Loslager=1, Festlager=2, Einspannung=3.'},
+  {s:'mech', cat:'Schwerpunkt', name:'Flächenschwerpunkt',
+   formula:'x_s = (1/A)·∫x dA\ny_s = (1/A)·∫y dA',
+   vars:'Zusammengesetzt: x_s = (A₁x₁+A₂x₂+…)/(A₁+A₂+…)',
+   tip:'Für Ausschnitte: Fläche negativ einsetzen.'},
+  {s:'mech', cat:'Schwerpunkt', name:'Steiner-Anteil',
+   formula:'I_A = I_S + A · d²',
+   vars:'I_S = Trägheitsmoment um Schwerachse\nd = Abstand Schwerachse → neue Achse',
+   tip:'Steiner ist immer positiv. Minimum von I liegt in der Schwerachse.'},
+  {s:'mech', cat:'Kinetik', name:'Newton 2. Gesetz',
+   formula:'Σ F⃗ = m · a⃗\nΣ M⃗_S = I_S · α',
+   vars:'m = Masse [kg]  a = Beschleunigung [m/s²]\nI_S = Massenträgheitsmoment  α = Winkelbeschleunigung',
+   tip:'Kein Netto-Kraft → keine Beschleunigung (Trägheit!). Statik ist Sonderfall: a=0.'},
+  {s:'mech', cat:'Kinetik', name:'Kinematik — gleichmäßig beschleunigt',
+   formula:'v = v₀ + a·t\ns = s₀ + v₀·t + ½·a·t²\nv² = v₀² + 2a·(s−s₀)',
+   vars:'Kreisbewegung: s→φ, v→ω, a→α',
+   tip:'Aus Ruhe (v₀=0): v=at, s=½at², v=√(2as). Diese 3 auswendig!'},
+  {s:'mech', cat:'Schnittgrößen', name:'Schnittgrößen am Balken',
+   formula:'N(x) = Normalkraft  [Achse]\nQ(x) = Querkraft    [⊥ Achse]\nM(x) = Biegemoment\ndQ/dx = −q(x)\ndM/dx = Q(x)',
+   vars:'q(x) = Streckenlast [N/m]',
+   tip:'Sprung in Q bei Einzelkraft. Sprung in M bei Einzelmoment. Q=0 → Extremum von M!'},
+];
+
+const FLASHCARDS = [
+  {id:'c1',s:'et',deck:'et-netz',topic:'Ohmsches Gesetz',q:'Was besagt das Ohmsche Gesetz? Formel + Einheiten.',a:'U = R · I',ex:'Spannung [V] = Widerstand [Ω] × Strom [A]. Gilt für lineare Widerstände.'},
+  {id:'c2',s:'et',deck:'et-netz',topic:'Parallelschaltung',q:'Gesamtwiderstand einer Parallelschaltung mit R₁, R₂, R₃?',a:'1/R_ges = 1/R₁ + 1/R₂ + 1/R₃',ex:'Die Kehrwerte addieren sich. Gleiche Spannung an allen Widerständen. Ströme addieren sich.'},
+  {id:'c3',s:'et',deck:'et-netz',topic:'Stromteiler',q:'Stromteiler: Wie groß ist I₁ bei parallelem R₁‖R₂?',a:'I₁ = I · R₂ / (R₁ + R₂)',ex:'Der "andere" Widerstand steht im Zähler! Merkhilfe: umgekehrtes Verhältnis.'},
+  {id:'c4',s:'et',deck:'et-netz',topic:'Spannungsteiler',q:'Spannungsteiler: Formel für U₂ an R₂ in Serienschaltung R₁+R₂?',a:'U₂ = U · R₂ / (R₁ + R₂)',ex:'Gilt nur wenn kein Strom abfließt am Abgriff. Bedingung: Leerlauf.'},
+  {id:'c5',s:'et',deck:'et-netz',topic:'Kirchhoff',q:'Formuliere KVL (Maschenregel) in einem Satz.',a:'Σ Uᵢ = 0 — Summe aller Spannungen im geschlossenen Umlauf = Null.',ex:'Energieerhaltung. Spannungsquellen liefern, Widerstände verbrauchen.'},
+  {id:'c6',s:'et',deck:'et-netz',topic:'Kirchhoff',q:'Formuliere KCL (Knotenregel) in einem Satz.',a:'Σ Iᵢ = 0 — Summe aller Ströme an einem Knoten = Null.',ex:'Ladungserhaltung. Zufließend +, abfließend −.'},
+  {id:'c7',s:'et',deck:'et-netz',topic:'Superposition',q:'Wie wendet man das Superpositionsprinzip an?',a:'Jede Quelle einzeln → Ergebnisse addieren. U-Quellen kurzschließen, I-Quellen öffnen.',ex:'Nur für lineare Netzwerke! Nichtlineare Elemente (Dioden) → nicht anwendbar.'},
+  {id:'c8',s:'et',deck:'et-netz',topic:'Widerstand',q:'Formel für Widerstand eines Leiters (Geometrie + Material)',a:'R = l / (κ · A)',ex:'κ=Leitfähigkeit, l=Länge, A=Querschnittsfläche. Cu: κ=56 m/Ωmm².'},
+  {id:'c9',s:'et',deck:'et-quellen',topic:'Innenwiderstand',q:'Wie berechnet man Ri aus Leerlauf- und Nennspannung?',a:'Ri = (U₀ − U_N) / I_N',ex:'U₀ = Leerlaufspannung, U_N = Klemmenspannung bei I_N. Je kleiner Ri, desto besser.'},
+  {id:'c10',s:'et',deck:'et-quellen',topic:'Thévenin',q:'Wie bestimmt man Thévenin-Ersatz (U₀, Ri) an Klemmen A-B?',a:'U₀ = Leerlaufspannung A-B. Ri = Widerstand A-B bei deaktivierten Quellen.',ex:'Deaktivieren: U-Quellen kurzschließen, I-Quellen öffnen.'},
+  {id:'c11',s:'et',deck:'et-feld',topic:'Coulomb',q:'Coulomb-Gesetz: Was passiert wenn Abstand r verdoppelt wird?',a:'F wird 4-mal kleiner (F ∝ 1/r²)',ex:'F = Q₁Q₂/(4πε₀r²). Quadratisches Abstandsgesetz — sehr empfindlich!'},
+  {id:'c12',s:'et',deck:'et-feld',topic:'E-Feld Kugel',q:'E-Feld einer geladenen Metallkugel: innen und außen?',a:'Innen: E = 0. Außen: E = Q/(4πε₀r²) — wie Punktladung.',ex:'Faraday-Käfig: Innen kein Feld. Ladung sitzt auf der Oberfläche.'},
+  {id:'c13',s:'et',deck:'et-feld',topic:'Kondensator',q:'Formel für Kapazität des Plattenkondensators mit Dielektrikum',a:'C = ε₀ · εᵣ · A / d',ex:'εᵣ größer → C größer, E kleiner. Luft: εᵣ≈1, Glas εᵣ≈5, Keramik bis 12.000!'},
+  {id:'c14',s:'et',deck:'et-feld',topic:'Kondensator Energie',q:'Energie gespeichert in einem Kondensator?',a:'We = ½ · C · U²',ex:'Auch We = Q²/(2C). Energie im elektrischen Feld gespeichert, nicht in den Ladungen!'},
+  {id:'c15',s:'et',deck:'et-feld',topic:'Dielektrikum',q:'εᵣ=4 wird in Plattenkondensator eingelegt (Q bleibt gleich). Was ändert sich?',a:'E wird 4× kleiner, U wird 4× kleiner, C wird 4× größer.',ex:'D=Q/A bleibt konstant. E=D/ε wird kleiner. U=E·d kleiner. C=Q/U steigt.'},
+  // Mechanik
+  {id:'m1',s:'mech',deck:'mech-statik',topic:'Gleichgewicht',q:'Die 3 Gleichgewichtsbedingungen in der Ebene (2D)?',a:'ΣFₓ = 0,  ΣFᵧ = 0,  ΣM_A = 0',ex:'Momentenpunkt A frei wählen — so dass möglichst viele Unbekannte herausfallen!'},
+  {id:'m2',s:'mech',deck:'mech-statik',topic:'Moment',q:'Wie berechnet man den Betrag eines Moments?',a:'|M| = |F| · d   wobei d = Hebelarm (⊥-Abstand WL zu Drehpunkt)',ex:'Oder über Kreuzprodukt: M = r × F. Vorzeichen: rechtsschraubenregel.'},
+  {id:'m3',s:'mech',deck:'mech-statik',topic:'Freikörperbild',q:'Die 3 Schritte beim Erstellen eines Freikörperbilds?',a:'1. Körper freischneiden. 2. Alle äußeren Kräfte/Momente eintragen. 3. Lagerreaktionen einzeichnen.',ex:'Ohne korrektes FKB ist jede Rechnung wertlos! Immer zuerst FKB, dann rechnen.'},
+  {id:'m4',s:'mech',deck:'mech-statik',topic:'Lager',q:'Wieviele Reaktionskräfte: Festlager, Loslager, Einspannung?',a:'Festlager: 2 (Fₓ, Fᵧ).  Loslager: 1 (Fₙ).  Einspannung: 3 (Fₓ, Fᵧ, M).',ex:'Statisch bestimmt in 2D: Summe = 3 Unbekannte. Mehr → unbestimmt.'},
+  {id:'m5',s:'mech',deck:'mech-statik',topic:'Resultierende',q:'Was ist die Resultierende R eines Kraftsystems?',a:'R⃗ = Σ F⃗ᵢ  — vektorielle Summe aller Kräfte',ex:'Komponentenweise addieren: Rₓ=ΣFᵢₓ, Rᵧ=ΣFᵢᵧ. |R|=√(Rₓ²+Rᵧ²).'},
+  {id:'m6',s:'mech',deck:'mech-kinetik',topic:'Newton',q:'Newton 2. Gesetz — Translation und Rotation?',a:'Σ F⃗ = m · a⃗   (Translation)\nΣ M⃗_S = I_S · α   (Rotation)',ex:'Statik ist Sonderfall mit a=0 und α=0. Kinetik: Beschleunigung ≠ 0.'},
+  {id:'m7',s:'mech',deck:'mech-kinetik',topic:'Kinematik',q:'Weg bei gleichmäßig beschleunigter Bewegung ab Ruhe?',a:'s = ½ · a · t²',ex:'Aus v=at und Integration. Auch: v=√(2as). Kreisbewegung: s→φ, v→ω, a→α.'},
+  {id:'m8',s:'mech',deck:'mech-kinetik',topic:'Steiner',q:'Steiner-Anteil: Wofür braucht man ihn und die Formel?',a:'I_A = I_S + A · d²  — Trägheitsmoment um beliebige Achse A',ex:'I_S = Trägheitsmoment um Schwerachse. d = Abstand. Steiner immer addieren, nie subtrahieren!'},
+];
+
+const AUFGABEN = [
+  {id:'a1',s:'et',num:'1.1',title:'Parallelschaltung',diff:'easy',
+   problem:'R₁=10Ω, R₂=20Ω, R₃=30Ω an U₀=6V. Berechne I₁, I₂, I₃, I und R_ges.',
+   given:['R₁=10Ω','R₂=20Ω','R₃=30Ω','U₀=6V'],
+   steps:['Parallelschaltung → U=6V an allen Widerständen.',
+     'I₁ = 6/10 = 0,6 A',
+     'I₂ = 6/20 = 0,3 A',
+     'I₃ = 6/30 = 0,2 A',
+     'I = 0,6+0,3+0,2 = 1,1 A',
+     '1/R_ges = 1/10+1/20+1/30 = 11/60 → R_ges = 5,45 Ω'],
+   result:'I₁=0,6A, I₂=0,3A, I₃=0,2A, I=1,1A, R_ges=5,45Ω'},
+  {id:'a2',s:'et',num:'1.2',title:'Serienschaltung',diff:'easy',
+   problem:'R₁=10Ω, R₂=20Ω, R₃=30Ω in Serie an U₀=6V. Berechne I, U₁, U₂, U₃.',
+   given:['R₁=10Ω','R₂=20Ω','R₃=30Ω','U₀=6V'],
+   steps:['R_ges = 10+20+30 = 60 Ω',
+     'I = U₀/R_ges = 6/60 = 0,1 A (gleich überall!)',
+     'U₁ = 0,1·10 = 1 V',
+     'U₂ = 0,1·20 = 2 V',
+     'U₃ = 0,1·30 = 3 V',
+     'Probe: 1+2+3 = 6 V ✓'],
+   result:'I=0,1A, U₁=1V, U₂=2V, U₃=3V'},
+  {id:'a3',s:'et',num:'2.3',title:'Superposition I₃',diff:'medium',
+   problem:'U₁₀=10V, U₂₀=10V, R₁=2Ω, R₂=2,6Ω, R₃=15Ω. I₃ per Superposition.',
+   given:['U₁₀=10V','U₂₀=10V','R₁=2Ω','R₂=2,6Ω','R₃=15Ω'],
+   steps:["Fall 1 — nur U₁₀ (U₂₀ kurzschließen):",
+     "R' = R₁ + R₂‖R₃ = 2 + (2,6·15/17,6) = 4,216 Ω",
+     "I' = 10/4,216 = 2,373 A",
+     "I₃' = I'·R₂/(R₂+R₃) = 2,373·2,6/17,6 = 0,350 A",
+     "Fall 2 — nur U₂₀ (U₁₀ kurzschließen):",
+     "R'' = R₂ + R₁‖R₃ = 2,6 + (2·15/17) = 4,365 Ω",
+     "I'' = 10/4,365 = 2,291 A",
+     "I₃'' = I''·R₁/(R₁+R₃) = 2,291·2/17 = 0,270 A",
+     "Überlagern: I₃ = I₃' + I₃'' = 0,350 + 0,270"],
+   result:'I₃ = 0,62 A'},
+  {id:'a4',s:'et',num:'3.1',title:'Batterie — Innenwiderstand',diff:'easy',
+   problem:'U₀=24,5V, Nennspannung U_N=23,6V bei I_N=80A. Berechne Ri und Ik.',
+   given:['U₀=24,5V','U_N=23,6V','I_N=80A'],
+   steps:['Ri = (U₀ − U_N) / I_N = (24,5−23,6)/80 = 0,9/80',
+     'Ik = U₀/Ri = 24,5/0,01125'],
+   result:'Ri = 11,25 mΩ, Ik = 2.178 A'},
+  {id:'a5',s:'et',num:'4.4',title:'Plattenkondensator',diff:'medium',
+   problem:'Q=±30nC, A=1,5dm², d=150µm. a) E, b) U, c) C; d) mit εᵣ=4.',
+   given:['Q=30·10⁻⁹C','A=0,015m²','d=150·10⁻⁶m','ε₀=8,854·10⁻¹²'],
+   steps:['σ = Q/A = 30e-9/0,015 = 2·10⁻⁶ C/m²',
+     'a) E = σ/ε₀ = 2e-6/8,854e-12 = 225.900 V/m',
+     'b) U = E·d = 225900·150e-6 = 33,9 V',
+     'c) C = ε₀·A/d = 8,854e-12·0,015/150e-6 = 885,4 pF',
+     'd) Mit εᵣ=4: E→56,5 kV/m, U→8,5 V, C→3,54 nF'],
+   result:'E=225,9kV/m, U=33,9V, C=885pF; εᵣ=4: E=56,5kV/m, U=8,5V, C=3,54nF'},
+  {id:'a6',s:'et',num:'2.6',title:'Thévenin-Ersatzquelle',diff:'medium',
+   problem:'U₁=100V, R₁=R₂=R₃=25Ω. Thévenin an Klemmen A-B.',
+   given:['U₁=100V','R₁=25Ω','R₂=25Ω','R₃=25Ω'],
+   steps:['U₀: Klemmen A-B offen → kein Strom durch R₃.',
+     'Spannungsteiler: I=U₁/(R₁+R₂)=100/50=2A',
+     'U₀ = U_R2 = 2·25 = 50 V',
+     'Ri: U₁ kurzschließen → R₁‖R₂ + R₃ = 12,5+25'],
+   result:'U₀ = 50 V, Ri = 37,5 Ω'},
+  {id:'a7',s:'mech',num:'VO 3',title:'Auflagerreaktionen Balken',diff:'medium',
+   problem:'Balken AB (Länge l): Festlager A links, Loslager B rechts. Einzellast F in Mitte. Berechne alle Auflagerreaktionen.',
+   given:['Festlager A: Fₐₓ, Fₐᵧ','Loslager B: Fᵦᵧ','Einzellast F bei x=l/2'],
+   steps:['Freikörperbild zeichnen!',
+     'ΣFₓ = 0: Fₐₓ = 0 (keine horizontale Last)',
+     'ΣM_A = 0: −F·(l/2) + Fᵦᵧ·l = 0 → Fᵦᵧ = F/2',
+     'ΣFᵧ = 0: Fₐᵧ − F + Fᵦᵧ = 0 → Fₐᵧ = F/2',
+     'Probe ΣM_B = 0: Fₐᵧ·l − F·l/2 = F/2·l − Fl/2 = 0 ✓'],
+   result:'Fₐₓ=0, Fₐᵧ=F/2, Fᵦᵧ=F/2'},
+  {id:'a8',s:'mech',num:'VO 7',title:'Flächenschwerpunkt Dreieck',diff:'medium',
+   problem:'Rechtwinkliges Dreieck, Breite b, Höhe h. Flächenschwerpunkt bestimmen.',
+   given:['Dreieck: b×h','Rechter Winkel bei Ursprung'],
+   steps:['A = b·h/2',
+     'x_s = (1/A)·∫₀ᵇ x·(h−h/b·x) dx',
+     '= (2/(bh))·[hx²/2 − hx³/(3b)]₀ᵇ',
+     '= (2/(bh))·(hb²/2 − hb²/3) = (2/(bh))·hb²/6',
+     'x_s = b/3',
+     'Analog: y_s = h/3 (Symmetrie des Integrals)'],
+   result:'x_s = b/3, y_s = h/3'},
+];
+
+const CONNECTIONS = [
+  {title:'Ohmsches Gesetz ↔ Newton',sub:'Lineare Antwort auf Anregung',
+   et:[['Spannung U','treibt Strom'],['Strom I','folgt der Spannung'],['Widerstand R','bremst']],
+   mech:[['Kraft F','treibt Beschleunigung'],['Beschleunigung a','folgt der Kraft'],['Masse m','Trägheit']],
+   note:'U=RI ↔ F=ma — beide lineare Proportionalitäten zwischen Ursache und Wirkung.'},
+  {title:'Elektrisches Feld ↔ Gravitation',sub:'Beide fallen mit 1/r² ab',
+   et:[['Ladung Q','Quelle des Feldes'],['E-Feld E','E=Q/(4πε₀r²)'],['Kraft F','F=Q·E']],
+   mech:[['Masse M','Quelle des Feldes'],['g-Feld g','g=GM/r²'],['Kraft F','F=m·g']],
+   note:'Beide sind Fernkräfte mit gleichem Abstandsgesetz — unterschiedliche Quellen, gleiche Mathematik.'},
+  {title:'Kondensator ↔ Feder',sub:'Energie speichern, nicht dissipieren',
+   et:[['Ladung Q','gespeichert'],['Spannung U=Q/C','∝ Q'],['Energie ½CU²','elektrisch']],
+   mech:[['Auslenkung x','gespeichert'],['Kraft F=kx','∝ x'],['Energie ½kx²','elastisch']],
+   note:'C ↔ 1/k. Kondensator = elektrischer Federspeicher. Widerstand ↔ Dämpfer (dissipiert).'},
+  {title:'Superposition ↔ Kräfteaddition',sub:'Lineare Systeme erlauben Überlagerung',
+   et:[['Mehrere Quellen','getrennt berechnen'],['ΣI','addieren'],['Gilt nur linear','']],
+   mech:[['Mehrere Kräfte','Resultierende'],['R⃗=ΣF⃗ᵢ','Vektoraddition'],['Gilt immer','für starre Körper']],
+   note:'In linearen Systemen darf man aufteilen und addieren — das ist die mächtigste Vereinfachung!'},
+  {title:'Innenwiderstand ↔ Reibung',sub:'Beide reduzieren die nutzbare Größe',
+   et:[['U₀','ideale Quelle'],['Ri','interner Verlust'],['U_kl=U₀−Ri·I','nutzbar']],
+   mech:[['F_antrieb','ideale Kraft'],['F_Reib','Verlust'],['F_nutz=F−F_R','nutzbar']],
+   note:'Je kleiner Ri (oder Reibung), desto effizienter. Ideal = verlustfrei.'},
+  {title:'Kirchhoff ↔ Gleichgewicht',sub:'Erhaltungsgesetze lokal anwenden',
+   et:[['KCL: ΣI=0','Knotenregel'],['KVL: ΣU=0','Maschenregel'],['Gilt an jedem Knoten','lokal']],
+   mech:[['ΣF=0','Kräftegleichgewicht'],['ΣM=0','Momentengleichgewicht'],['Gilt am Schnitt','lokal']],
+   note:'KCL = Ladungserhaltung. ΣF=0 = Impulserhaltung. Beide: lokales Gleichgewicht gilt überall.'},
+];
+
+/* ──────────────────────────────────────────────
+   NAVIGATION
+────────────────────────────────────────────── */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+  document.getElementById('page-'+id).scrollTop = 0;
+  // lazy render
+  if (id === 'topics')      renderTopics();
+  if (id === 'formeln')     renderFormulas();
+  if (id === 'karten')      initFlashcards();
+  if (id === 'aufgaben')    renderAufgaben();
+  if (id === 'connections') renderConnections();
+}
+
+function setSubject(s) {
+  subject = s;
+  DB.set('subject', s);
+  document.querySelectorAll('.subj-pill').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.subj-pill.${s}`).classList.add('active');
+  // update nav tab accents
+  document.querySelectorAll('.nav-tab').forEach(t => {
+    t.className = t.className.replace(/et-tab|mech-tab|both-tab/, '');
+    t.classList.add(s === 'both' ? 'both-tab' : s+'-tab');
+  });
+  // re-render current page
+  const active = document.querySelector('.page.active');
+  if (active) showPage(active.id.replace('page-',''));
+  renderDash();
+}
+
+/* ──────────────────────────────────────────────
+   DASHBOARD
+────────────────────────────────────────────── */
+function renderDash() {
+  // Hero
+  const hero = document.getElementById('dash-hero');
+  const due = getDue().length;
+  if (subject === 'et') {
+    hero.className = 'dash-hero et-hero'; hero.dataset.emoji='⚡';
+    hero.innerHTML = `<div class="hero-sub et">Elektrotechnik 1</div><div class="hero-title">Übungen 1–4<br>Gleichstrom, E-Feld, Kondensatoren</div>`;
+  } else if (subject === 'mech') {
+    hero.className = 'dash-hero mech-hero'; hero.dataset.emoji='⚙';
+    hero.innerHTML = `<div class="hero-sub mech">Mechanik</div><div class="hero-title">Statik, Kinematik<br>Schnittgrößen & Biegung</div>`;
+  } else {
+    hero.className = 'dash-hero both-hero'; hero.dataset.emoji='📐';
+    hero.innerHTML = `<div class="hero-sub both">ET1 & Mechanik</div><div class="hero-title">Dein Lernbegleiter<br>für beide Fächer</div>`;
+  }
+  // Stats
+  const etDone = TOPICS.filter(t=>t.s==='et').reduce((a,t)=>a+t.sub.filter((_,i)=>topicProgress[t.id]?.[i]).length,0);
+  const mDone  = TOPICS.filter(t=>t.s==='mech').reduce((a,t)=>a+t.sub.filter((_,i)=>topicProgress[t.id]?.[i]).length,0);
+  document.getElementById('stat-row').innerHTML = `
+    <div class="stat-box"><div class="stat-val et">${due}</div><div class="stat-lbl">Fällig</div></div>
+    <div class="stat-box"><div class="stat-val good">${etDone}</div><div class="stat-lbl">ET Themen</div></div>
+    <div class="stat-box"><div class="stat-val mech">${mDone}</div><div class="stat-lbl">Mech. Themen</div></div>`;
+  // Today
+  const todayItems = [
+    {s:'et',  name:'Ohmsches Gesetz & Kirchhoff',  meta:'8 Karten · ÜB 1–2', action:()=>launchCards('et-netz')},
+    {s:'et',  name:'Plattenkondensator & E-Feld',   meta:'7 Karten · ÜB 4',   action:()=>launchCards('et-feld')},
+    {s:'mech',name:'Statik — Freikörperbild',       meta:'5 Karten · VO 3',   action:()=>launchCards('mech-statik')},
+    {s:'mech',name:'Schnittgrößen Balken',           meta:'ÜB: Aufgabe lösen', action:()=>showPage('aufgaben')},
+  ].filter(i => subject==='both' || i.s===subject);
+  document.getElementById('today-list').innerHTML = todayItems.map(i=>`
+    <div class="today-item" onclick="">
+      <div class="ti-dot ${i.s}"></div>
+      <div class="ti-info">
+        <div class="ti-name">${i.name}</div>
+        <div class="ti-meta">${i.meta}</div>
+      </div>
+      <div class="ti-arrow">›</div>
+    </div>`).join('');
+  document.querySelectorAll('.today-item').forEach((el,i) => {
+    el.onclick = () => todayItems[i].action();
+  });
+  // Progress bars
+  const bars = subject === 'mech' ? [
+    {label:'Vektoren & Kräfte',   pct:55, s:'mech'},
+    {label:'Statik',              pct:45, s:'mech'},
+    {label:'Schwerpunkt',         pct:20, s:'mech'},
+    {label:'Kinematik',           pct:15, s:'mech'},
+    {label:'Schnittgrößen',       pct:10, s:'mech'},
+  ] : subject === 'et' ? [
+    {label:'Netzwerke',           pct:65, s:'et'},
+    {label:'Quellen',             pct:40, s:'et'},
+    {label:'E-Feld & Kondensatoren', pct:20, s:'et'},
+  ] : [
+    {label:'ET1 — Netzwerke',     pct:65, s:'et'},
+    {label:'ET1 — Quellen',       pct:40, s:'et'},
+    {label:'ET1 — E-Feld',        pct:20, s:'et'},
+    {label:'Mech — Statik',       pct:45, s:'mech'},
+    {label:'Mech — Kinematik',    pct:15, s:'mech'},
+  ];
+  document.getElementById('progress-bars').innerHTML = bars.map(b=>`
+    <div class="prog-label-row"><span>${b.label}</span><strong>${b.pct}%</strong></div>
+    <div class="prog-track"><div class="prog-fill ${b.s}" style="width:${b.pct}%"></div></div>`).join('');
+}
+
+/* ──────────────────────────────────────────────
+   TOPICS
+────────────────────────────────────────────── */
+let topicsFilter = 'all';
+function renderTopics() {
+  const filtered = TOPICS.filter(t => topicsFilter==='all' || t.s===topicsFilter);
+  const etCount   = TOPICS.filter(t=>t.s==='et').length;
+  const mechCount = TOPICS.filter(t=>t.s==='mech').length;
+  // Banner
+  const bannerEl = document.getElementById('topics-banner');
+  if (topicsFilter === 'et') {
+    bannerEl.innerHTML = `<div class="subject-banner sb-et"><div class="sb-icon">⚡</div><div class="sb-text"><h2>Elektrotechnik 1</h2><p>Übungen 1–4 · Grundlagen bis E-Feld</p></div><div class="sb-count et"><strong>${etCount}</strong><span>Kapitel</span></div></div>`;
+  } else if (topicsFilter === 'mech') {
+    bannerEl.innerHTML = `<div class="subject-banner sb-mech"><div class="sb-icon">⚙</div><div class="sb-text"><h2>Mechanik</h2><p>Vorlesung 1–12 · Statik bis Schnittgrößen</p></div><div class="sb-count mech"><strong>${mechCount}</strong><span>Kapitel</span></div></div>`;
+  } else {
+    bannerEl.innerHTML = `<div class="subject-banner sb-both"><div class="sb-icon">📚</div><div class="sb-text"><h2>Alle Themen</h2><p>ET1 & Mechanik zusammen</p></div><div class="sb-count"><strong>${etCount+mechCount}</strong><span>Kapitel</span></div></div>`;
+  }
+  // Filter chips
+  document.getElementById('topics-filter').innerHTML =
+    ['all','et','mech'].map(f=>`<button class="chip ${topicsFilter===f?('active-'+(f==='all'?'all':f)):''}" onclick="setTopicsFilter('${f}',this)">${f==='all'?'Alle':f==='et'?'⚡ ET1':'⚙ Mechanik'}</button>`).join('');
+  // List
+  document.getElementById('topics-list').innerHTML = filtered.map(t => {
+    const prog = topicProgress[t.id] || {};
+    const done = t.sub.filter((_,i) => prog[i]).length;
+    const pct  = Math.round(done/t.sub.length*100);
+    const r=14, circ=2*Math.PI*r;
+    return `<div class="topic-item ${t.s}-item">
+      <div class="topic-header" id="th-${t.id}" onclick="toggleTopic('${t.id}')">
+        <span class="t-num">${t.num}</span>
+        <span class="tag ${t.s}">${t.s==='et'?'ET1':'Mech.'}</span>
+        <span class="t-title">${t.title}</span>
+        <div class="t-ring-wrap">
+          <svg width="34" height="34" viewBox="0 0 34 34">
+            <circle cx="17" cy="17" r="${r}" fill="none" stroke="var(--border2)" stroke-width="2.5"/>
+            <circle cx="17" cy="17" r="${r}" fill="none" stroke="${t.s==='et'?'var(--et)':'var(--mech)'}" stroke-width="2.5"
+              stroke-dasharray="${circ}" stroke-dashoffset="${circ*(1-pct/100)}" stroke-linecap="round"/>
+          </svg>
+          <div class="t-ring-pct">${pct}%</div>
+        </div>
+        <span class="t-chevron">›</span>
+      </div>
+      <div class="topic-body" id="tb-${t.id}">
+        <div class="topic-desc">${t.desc}</div>
+        ${t.sub.map((s,i)=>`
+          <div class="subtopic-row ${prog[i]?'done':''}" onclick="toggleSub('${t.id}',${i})">
+            <div class="st-check">${prog[i]?'✓':''}</div>
+            <div class="st-text">${s}</div>
+          </div>`).join('')}
+        <div class="topic-btns" style="margin-top:12px">
+          <button class="btn ${t.s}" onclick="launchCards('${t.s}-all')">🃏 Karten</button>
+          <button class="btn ghost" onclick="showPage('formeln')">∑ Formeln</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function setTopicsFilter(f, btn) {
+  topicsFilter = f;
+  renderTopics();
+}
+
+function toggleTopic(id) {
+  const hdr = document.getElementById('th-'+id);
+  const bdy = document.getElementById('tb-'+id);
+  hdr.classList.toggle('open');
+  bdy.classList.toggle('open');
+}
+
+function toggleSub(topicId, idx) {
+  if (!topicProgress[topicId]) topicProgress[topicId] = {};
+  topicProgress[topicId][idx] = !topicProgress[topicId][idx];
+  DB.set('topicProgress', topicProgress);
+  renderTopics();
+  toast('Gespeichert ✓');
+}
+
+/* ──────────────────────────────────────────────
+   FORMULAS
+────────────────────────────────────────────── */
+let formulaCat = 'all';
+function renderFormulas() {
+  const visible = FORMULAS.filter(f => subject==='both'||f.s===subject);
+  const cats = [...new Set(visible.map(f=>f.cat))];
+  document.getElementById('formula-hint').textContent =
+    subject==='et'?'ET1 — Grundlagen bis Kondensatoren':
+    subject==='mech'?'Mechanik — Vektoren bis Schnittgrößen':
+    'ET1 & Mechanik — alle wichtigen Formeln';
+  document.getElementById('formula-cats').innerHTML =
+    ['all',...cats].map(c=>`<button class="chip ${formulaCat===c?('active-'+(subject==='et'?'et':subject==='mech'?'mech':'all')):''}" onclick="setFormulaCat('${c}')">${c==='all'?'Alle':c}</button>`).join('');
+  renderFormulaList('');
+}
+
+function setFormulaCat(c) {
+  formulaCat = c;
+  document.getElementById('formula-search').value = '';
+  renderFormulas();
+  renderFormulaList('');
+}
+
+function renderFormulaList(q) {
+  const list = FORMULAS.filter(f =>
+    (subject==='both'||f.s===subject) &&
+    (formulaCat==='all'||f.cat===formulaCat) &&
+    (!q || (f.name+f.formula+(f.vars||'')).toLowerCase().includes(q.toLowerCase()))
+  );
+  document.getElementById('formula-list').innerHTML = list.map(f=>`
+    <div class="formula-card ${f.s}-f">
+      <span class="tag ${f.s}">${f.s==='et'?'ET1':'Mechanik'} — ${f.cat}</span>
+      <div class="fc-name">${f.name}</div>
+      <div class="fc-box ${f.s==='mech'?'mech-box':''}">${f.formula}</div>
+      ${f.vars?`<div class="fc-vars">${f.vars.replace(/\n/g,'<br>').replace(/([A-Za-z_₀₁₂ᵧₓᵢₙₛ]+)/g,'<code>$1</code>')}</div>`:''}
+      ${f.tip?`<div class="fc-tip ${f.s==='mech'?'mech-tip':''}">💡 ${f.tip}</div>`:''}
+    </div>`).join('') || `<div style="text-align:center;padding:40px;color:var(--muted)">Keine Formeln gefunden</div>`;
+}
+
+function searchFormulas(q) {
+  renderFormulaList(q);
+}
+
+/* ──────────────────────────────────────────────
+   FLASHCARDS
+────────────────────────────────────────────── */
+function getDue() {
+  return FLASHCARDS.filter(c => {
+    if (subject !== 'both' && c.s !== subject) return false;
+    const r = cardRatings[c.id];
+    return !r || new Date(r.due) <= new Date();
+  });
+}
+
+function initFlashcards() {
+  loadDeck();
+}
+
+function loadDeck() {
+  const val = document.getElementById('deck-select').value;
+  let pool = FLASHCARDS;
+  if (val === 'due') pool = getDue();
+  else if (val === 'et-netz')    pool = FLASHCARDS.filter(c=>c.deck==='et-netz');
+  else if (val === 'et-quellen') pool = FLASHCARDS.filter(c=>c.deck==='et-quellen');
+  else if (val === 'et-feld')    pool = FLASHCARDS.filter(c=>c.deck==='et-feld');
+  else if (val === 'mech-statik')  pool = FLASHCARDS.filter(c=>c.deck==='mech-statik');
+  else if (val === 'mech-kinetik') pool = FLASHCARDS.filter(c=>c.deck==='mech-kinetik');
+  // subject filter on top
+  if (subject !== 'both') pool = pool.filter(c=>c.s===subject);
+  currentDeck = [...pool];
+  cardIdx = 0; flipped = false;
+  sessionStats = {good:0,hard:0,again:0};
+  updateCardStats();
+  renderCard();
+}
+
+function shuffleDeck() {
+  for (let i=currentDeck.length-1;i>0;i--) {
+    const j=Math.floor(Math.random()*(i+1));
+    [currentDeck[i],currentDeck[j]]=[currentDeck[j],currentDeck[i]];
+  }
+  cardIdx=0; flipped=false; renderCard();
+}
+
+function launchCards(deckId) {
+  showPage('karten');
+  document.getElementById('deck-select').value =
+    deckId === 'et-all' ? 'et-netz' :
+    deckId === 'mech-all' ? 'mech-statik' : deckId;
+  loadDeck();
+}
+
+function renderCard() {
+  const area = document.getElementById('flashcard-area');
+  if (!currentDeck.length) {
+    area.innerHTML = `<div class="done-screen"><div class="done-emoji">📭</div><div class="done-title">Kein Deck geladen</div><div class="done-sub">Wähle oben ein Deck aus.</div></div>`;
+    return;
+  }
+  if (cardIdx >= currentDeck.length) {
+    area.innerHTML = `<div class="done-screen">
+      <div class="done-emoji">🎉</div>
+      <div class="done-title">Fertig!</div>
+      <div class="done-sub">Alle ${currentDeck.length} Karten abgeschlossen.</div>
+      <div class="done-stats">
+        <div class="done-stat" style="color:var(--good)"><strong>${sessionStats.good}</strong>Gut</div>
+        <div class="done-stat" style="color:var(--hard)"><strong>${sessionStats.hard}</strong>Schwer</div>
+        <div class="done-stat" style="color:var(--again)"><strong>${sessionStats.again}</strong>Nochmal</div>
+      </div>
+      <button class="btn ${subject==='mech'?'mech':'et'}" onclick="cardIdx=0;flipped=false;renderCard()">↺ Nochmals</button>
+    </div>`;
+    return;
+  }
+  const c = currentDeck[cardIdx];
+  area.innerHTML = `
+    <div class="flip-scene">
+      <div class="flip-card ${flipped?'flipped':''}" id="flip-card" onclick="flipCard()">
+        <div class="flip-face flip-front ${c.s}-face">
+          <div class="card-stripe ${c.s}"></div>
+          <div class="card-label">
+            <span>${c.topic} · <span class="tag ${c.s}" style="padding:1px 6px">${c.s==='et'?'ET1':'Mechanik'}</span></span>
+            <span>${cardIdx+1}/${currentDeck.length}</span>
+          </div>
+          <div class="card-q">${c.q}</div>
+          <div class="card-tap-hint">Tippen zum Aufdecken</div>
+        </div>
+        <div class="flip-face flip-back ${c.s}-face">
+          <div class="card-stripe ${c.s}"></div>
+          <div class="card-label"><span>Antwort</span><span>${cardIdx+1}/${currentDeck.length}</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px">
+            <div class="card-ans-main">${c.a}</div>
+            <div class="card-ans-explain">${c.ex}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    ${flipped ? `
+    <div class="rating-row">
+      <button class="rate-btn again" onclick="rateCard('again')">😰<br>Nochmal</button>
+      <button class="rate-btn hard"  onclick="rateCard('hard')">😅<br>Schwer</button>
+      <button class="rate-btn good"  onclick="rateCard('good')">😊<br>Gut</button>
+      <button class="rate-btn easy"  onclick="rateCard('easy')">🚀<br>Leicht</button>
+    </div>` : ''}
+    <div class="card-nav-row" style="margin-top:10px">
+      <button class="cnav-btn" onclick="cardIdx=Math.max(0,cardIdx-1);flipped=false;renderCard()" ${cardIdx===0?'disabled':''}>←</button>
+      <div class="cnav-counter">${cardIdx+1} / ${currentDeck.length}</div>
+      <button class="cnav-btn" onclick="cardIdx++;flipped=false;renderCard()">Überspringen →</button>
+    </div>`;
+}
+
+function flipCard() { flipped=!flipped; renderCard(); }
+
+function rateCard(r) {
+  const c = currentDeck[cardIdx];
+  if (r==='good'||r==='easy') sessionStats.good++;
+  else if (r==='hard') sessionStats.hard++;
+  else sessionStats.again++;
+  // SM-2
+  const cr = cardRatings[c.id] || {interval:1, ef:2.5};
+  if (r==='again')     { cr.interval=1; }
+  else if (r==='hard') { cr.interval=Math.max(1,cr.interval*0.8); cr.ef=Math.max(1.3,cr.ef-0.15); }
+  else if (r==='good') { cr.interval=cr.interval*cr.ef; }
+  else                 { cr.interval=cr.interval*cr.ef*1.3; cr.ef=cr.ef+0.1; }
+  cr.due = new Date(Date.now()+cr.interval*86400000).toISOString();
+  cardRatings[c.id] = cr;
+  DB.set('cardRatings', cardRatings);
+  updateCardStats();
+  cardIdx++; flipped=false; renderCard();
+}
+
+function updateCardStats() {
+  document.getElementById('s-good').textContent  = sessionStats.good;
+  document.getElementById('s-hard').textContent  = sessionStats.hard;
+  document.getElementById('s-again').textContent = sessionStats.again;
+}
+
+/* ──────────────────────────────────────────────
+   AUFGABEN
+────────────────────────────────────────────── */
+let aufgFilter = 'all';
+function renderAufgaben() {
+  const chips = ['all','et','mech','easy','medium','hard'];
+  document.getElementById('aufg-filter').innerHTML = chips.map(f=>
+    `<button class="chip ${aufgFilter===f?('active-'+(f==='et'?'et':f==='mech'?'mech':'all')):''}" onclick="setAufgFilter('${f}')">${
+      f==='all'?'Alle':f==='et'?'⚡ ET1':f==='mech'?'⚙ Mech.':f==='easy'?'Einfach':f==='medium'?'Mittel':'Schwer'
+    }</button>`).join('');
+  const list = AUFGABEN.filter(a =>
+    (aufgFilter==='all'||a.s===aufgFilter||a.diff===aufgFilter) &&
+    (subject==='both'||a.s===subject)
+  );
+  document.getElementById('aufg-list').innerHTML = list.map(a=>`
+    <div class="aufg-item">
+      <div class="aufg-head" onclick="toggleAufg('${a.id}')">
+        <span class="aufg-code">${a.num}</span>
+        <span class="tag ${a.s}">${a.s==='et'?'ET1':'Mech.'}</span>
+        <span class="aufg-name">${a.title}</span>
+        <span class="diff-badge ${a.diff}">${a.diff==='easy'?'Einfach':a.diff==='medium'?'Mittel':'Schwer'}</span>
+      </div>
+      <div class="aufg-body" id="ab-${a.id}">
+        <div class="aufg-problem-box">${a.problem}</div>
+        <div class="given-row">${a.given.map(g=>`<span class="given-pill">${g}</span>`).join('')}</div>
+        <button class="sol-toggle" id="st-${a.id}" onclick="toggleSol('${a.id}')">▶ Lösungsweg anzeigen</button>
+        <div class="sol-box" id="sb-${a.id}">
+          ${a.steps.map(s=>`<div class="sol-step">${s}</div>`).join('')}
+          <div class="sol-result">✓ ${a.result}</div>
+        </div>
+      </div>
+    </div>`).join('') || `<div style="text-align:center;padding:40px;color:var(--muted)">Keine Aufgaben gefunden</div>`;
+}
+
+function setAufgFilter(f) { aufgFilter=f; renderAufgaben(); }
+function toggleAufg(id)  { document.getElementById('ab-'+id).classList.toggle('open'); }
+function toggleSol(id)   {
+  const box = document.getElementById('sb-'+id);
+  const btn = document.getElementById('st-'+id);
+  box.classList.toggle('open');
+  btn.textContent = box.classList.contains('open') ? '▼ Lösungsweg verbergen' : '▶ Lösungsweg anzeigen';
+}
+
+/* ──────────────────────────────────────────────
+   CONNECTIONS
+────────────────────────────────────────────── */
+function renderConnections() {
+  document.getElementById('conn-list').innerHTML = CONNECTIONS.map(c=>`
+    <div class="conn-card">
+      <div class="conn-title">${c.title}</div>
+      <div class="conn-sub">${c.sub}</div>
+      <div class="analogy">
+        <div class="analogy-col et-col">
+          <h4>ET1</h4>
+          ${c.et.map(r=>`<div class="analogy-row"><span class="ar-key">${r[0]}</span><span class="ar-val">${r[1]}</span></div>`).join('')}
+        </div>
+        <div class="analogy-divider">⟷</div>
+        <div class="analogy-col mech-col">
+          <h4>Mechanik</h4>
+          ${c.mech.map(r=>`<div class="analogy-row"><span class="ar-key">${r[0]}</span><span class="ar-val">${r[1]}</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="conn-note">💡 ${c.note}</div>
+    </div>`).join('');
+}
+
+/* ──────────────────────────────────────────────
+   TOAST
+────────────────────────────────────────────── */
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+/* ──────────────────────────────────────────────
+   PWA
+────────────────────────────────────────────── */
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+/* ──────────────────────────────────────────────
+   INIT
+────────────────────────────────────────────── */
+// restore subject
+document.querySelector(`.subj-pill.${subject}`).classList.add('active');
+document.querySelectorAll('.subj-pill').forEach(p => {
+  if (!p.classList.contains(subject)) p.classList.remove('active');
+});
+renderDash();
+</script>
+</body>
+</html>
